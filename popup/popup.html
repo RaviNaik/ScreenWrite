@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>On-Screen Writer</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="header">
+      <img src="../icons/icon32.png" alt="" width="24" height="24" />
+      <h1>On-Screen Writer</h1>
+    </header>
+
+    <p id="status" class="status">Checking this tab…</p>
+
+    <button id="toggleBtn" type="button" class="primary">Start Annotating</button>
+
+    <section class="shortcuts">
+      <h2>Shortcuts</h2>
+      <dl>
+        <dt>Toggle overlay</dt>
+        <dd>Ctrl+Shift+E</dd>
+        <dt>Clear drawing</dt>
+        <dd>Ctrl+Shift+X</dd>
+        <dt>Undo / Redo</dt>
+        <dd>Ctrl+Z / Ctrl+Shift+Z</dd>
+        <dt>Tools</dt>
+        <dd>P H U E R O L A T</dd>
+        <dt>Width</dt>
+        <dd>[ / ]</dd>
+        <dt>Background</dt>
+        <dd>B</dd>
+        <dt>Export PNG</dt>
+        <dd>Ctrl+S</dd>
+        <dt>Exit tool</dt>
+        <dd>Esc</dd>
+      </dl>
+      <button id="shortcutsLink" type="button" class="linklike">
+        Change global shortcuts…
+      </button>
+    </section>
+
+    <script src="../shared/constants.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

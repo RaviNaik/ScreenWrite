@@ -1,0 +1,56 @@
+name: Build extension
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Package extension
+        id: pkg
+        env:
+          # Repo secret holding the PEM private key. Without it, each build is
+          # signed with a throwaway key and gets a different extension ID.
+          CRX_PRIVATE_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
+        run: node scripts/build.mjs
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pkg.outputs.base }}
+          path: dist/*
+
+      - name: Publish GitHub release
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.pkg.outputs.version }}-build.${{ github.run_number }}
+        run: |
+          gh release create "$TAG" dist/* \
+            --target "$GITHUB_SHA" \
+            --title "On-Screen Writer $TAG" \
+            --latest \
+            --notes "Automated build of \`${GITHUB_SHA::7}\` on \`main\`.
+
+          Extension ID: \`${{ steps.pkg.outputs.extension_id }}\`
+
+          - **.zip** – unzip and use *Load unpacked* in \`chrome://extensions\` (works on every OS), or upload to the Chrome Web Store.
+          - **.crx** – signed package; drag onto \`chrome://extensions\` with Developer mode on (see README for platform caveats)."
